@@ -18,12 +18,14 @@ use Doctrine\Persistence\ManagerRegistry as RegistryInterface;
 use Eccube\Common\EccubeConfig;
 use Eccube\Doctrine\Query\Queries;
 use Eccube\Entity\Category;
+use Eccube\Entity\Master\OrderStatus;
 use Eccube\Entity\Master\ProductListMax;
 use Eccube\Entity\Master\ProductListOrderBy;
 use Eccube\Entity\Master\ProductStatus;
 use Eccube\Entity\Product;
 use Eccube\Entity\ProductStock;
 use Eccube\Entity\Tag;
+use Eccube\Request\Context;
 use Eccube\Util\StringUtil;
 
 /**
@@ -44,6 +46,11 @@ class ProductRepository extends AbstractRepository
      */
     protected $eccubeConfig;
 
+    /**
+     * @var Context
+     */
+    protected $requestContext;
+
     public const COLUMNS = [
         'product_id' => 'p.id', 'name' => 'p.name', 'product_code' => 'pc.code', 'stock' => 'pc.stock', 'status' => 'p.Status', 'create_date' => 'p.create_date', 'update_date' => 'p.update_date',
     ];
@@ -58,11 +65,13 @@ class ProductRepository extends AbstractRepository
     public function __construct(
         RegistryInterface $registry,
         Queries $queries,
-        EccubeConfig $eccubeConfig
+        EccubeConfig $eccubeConfig,
+        Context $requestContext
     ) {
         parent::__construct($registry, Product::class);
         $this->queries = $queries;
         $this->eccubeConfig = $eccubeConfig;
+        $this->requestContext = $requestContext;
     }
 
     /**
@@ -147,8 +156,16 @@ class ProductRepository extends AbstractRepository
      */
     public function getQueryBuilderBySearchData($searchData)
     {
+        $excludes = [];
+        $excludes[] = OrderStatus::CANCEL;
+        $user = $this->requestContext->getCurrentUser();
         $qb = $this->createQueryBuilder('p')
-            ->andWhere('p.Status = 1');
+            ->leftJoin('p.OrderItems', 'oi')
+            ->leftJoin('oi.Order', 'o')
+            ->where('p.Status = 1')
+            ->orWhere('p.Status = 2 AND o.Customer = :CustomerId AND o.OrderStatus NOT IN (:excludes)')
+            ->setParameter('excludes', $excludes)
+            ->setParameter('CustomerId', $user->getId());
 
         // category
         $categoryJoin = false;

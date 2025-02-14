@@ -429,4 +429,27 @@ class ProductRepository extends AbstractRepository
 
         return $this->queries->customize(QueryKey::PRODUCT_SEARCH_ADMIN, $qb, $searchData);
     }
+
+    /**
+     * Get the result for the product status not in the excludes list.
+     *
+     * @return \Eccube\Entity\Product|null
+     */
+    public function getProductStatusNotIn(Product $product)
+    {
+        $excludes = [];
+        $excludes[] = OrderStatus::CANCEL;
+        $user = $this->requestContext->getCurrentUser();
+
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.OrderItems', 'oi')
+            ->leftJoin('oi.Order', 'o')
+            ->where('p.id = :ProductId')
+            ->andWhere('o.Customer = :CustomerId AND o.OrderStatus NOT IN (:excludes)')
+            ->setParameter('excludes', $excludes)
+            ->setParameter('CustomerId', $user->getId())
+            ->setParameter('ProductId', $product->getId());
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
 }

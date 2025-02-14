@@ -24,6 +24,7 @@ use Eccube\Repository\BaseInfoRepository;
 use Eccube\Repository\CustomerFavoriteProductRepository;
 use Eccube\Repository\Master\ProductListMaxRepository;
 use Eccube\Repository\ProductRepository;
+use Eccube\Request\Context;
 use Eccube\Service\CartService;
 use Eccube\Service\PurchaseFlow\PurchaseContext;
 use Eccube\Service\PurchaseFlow\PurchaseFlow;
@@ -74,6 +75,11 @@ class ProductController extends AbstractController
      */
     protected $productListMaxRepository;
 
+    /**
+     * @var Context
+     */
+    protected $requestContext;
+
     private $title = '';
 
     /**
@@ -94,7 +100,8 @@ class ProductController extends AbstractController
         ProductRepository $productRepository,
         BaseInfoRepository $baseInfoRepository,
         AuthenticationUtils $helper,
-        ProductListMaxRepository $productListMaxRepository
+        ProductListMaxRepository $productListMaxRepository,
+        Context $requestContext
     ) {
         $this->purchaseFlow = $cartPurchaseFlow;
         $this->customerFavoriteProductRepository = $customerFavoriteProductRepository;
@@ -103,6 +110,7 @@ class ProductController extends AbstractController
         $this->BaseInfo = $baseInfoRepository->get();
         $this->helper = $helper;
         $this->productListMaxRepository = $productListMaxRepository;
+        $this->requestContext = $requestContext;
     }
 
     /**
@@ -464,6 +472,9 @@ class ProductController extends AbstractController
             // }
             // 公開ステータスでない商品は表示しない.
             if ($Product->getStatus()->getId() !== ProductStatus::DISPLAY_SHOW) {
+                if ($Product->getStatus()->getId() === ProductStatus::DISPLAY_HIDE && $this->productRepository->getProductStatusNotIn($Product)) {
+                    return true;
+                }
                 return false;
             }
         }

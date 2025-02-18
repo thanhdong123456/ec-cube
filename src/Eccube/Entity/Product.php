@@ -567,13 +567,6 @@ if (!class_exists('\Eccube\Entity\Product')) {
         private $Status;
 
         /**
-         * @var \Doctrine\Common\Collections\Collection
-         *
-         * @ORM\OneToMany(targetEntity="Eccube\Entity\OrderItem", mappedBy="Product", cascade={"persist"})
-         */
-        private $OrderItems;
-
-        /**
          * Constructor
          */
         public function __construct()

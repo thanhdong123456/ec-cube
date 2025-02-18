@@ -5,7 +5,6 @@ customize_controllers:
     resource: ../../../app/Customize/Controller
     type: annotation
 
-
 #    prefix: /{_locale}
     # prefix: /
     # requirements:

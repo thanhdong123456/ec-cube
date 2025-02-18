@@ -6,10 +6,6 @@ customize_controllers:
     type: annotation
 
 
-eccube_product_detail_custom:
-    path: /product/detail/{id}
-    controller: Customize\Controller\ProductController::detail
-
 #    prefix: /{_locale}
     # prefix: /
     # requirements:

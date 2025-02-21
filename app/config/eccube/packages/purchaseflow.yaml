@@ -116,15 +116,15 @@ services:
         tags:
             - { name: eccube.item.holder.preprocessor, flow_type: shopping, priority: 900 }
 
-    eccube.purchase.flow.item.holder.preprocessor.delivery.fee.preprocessor:
-        class: Eccube\Service\PurchaseFlow\Processor\DeliveryFeePreprocessor
-        arguments:
-            - '@Eccube\Repository\BaseInfoRepository'
-            - '@doctrine.orm.default_entity_manager'
-            - '@Eccube\Repository\TaxRuleRepository'
-            - '@Eccube\Repository\DeliveryFeeRepository'
-        tags:
-            - { name: eccube.item.holder.preprocessor, flow_type: shopping, priority: 800 }
+    # eccube.purchase.flow.item.holder.preprocessor.delivery.fee.preprocessor:
+    #     class: Eccube\Service\PurchaseFlow\Processor\DeliveryFeePreprocessor
+    #     arguments:
+    #         - '@Eccube\Repository\BaseInfoRepository'
+    #         - '@doctrine.orm.default_entity_manager'
+    #         - '@Eccube\Repository\TaxRuleRepository'
+    #         - '@Eccube\Repository\DeliveryFeeRepository'
+    #     tags:
+    #         - { name: eccube.item.holder.preprocessor, flow_type: shopping, priority: 800 }
 
     eccube.purchase.flow.item.holder.preprocessor.delivery.fee.free.by.shipping.preprocessor:
         class: Eccube\Service\PurchaseFlow\Processor\DeliveryFeeFreeByShippingPreprocessor

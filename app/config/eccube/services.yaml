@@ -241,3 +241,12 @@ services:
     Eccube\Util\CacheUtil:
         arguments:
             $container: !tagged_locator { tag: 'cache.pool.clearer' }
+
+    Customize\Service\PurchaseFlow\Processor\DeliveryFeePreprocessor:
+        arguments:
+            - '@Eccube\Repository\BaseInfoRepository'
+            - '@doctrine.orm.default_entity_manager'
+            - '@Eccube\Repository\TaxRuleRepository'
+            - '@Eccube\Repository\DeliveryFeeRepository'
+        tags:
+            - { name: eccube.item.holder.preprocessor, flow_type: shopping, priority: 800 }
